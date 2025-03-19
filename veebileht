@@ -1,0 +1,72 @@
+<html lang="et">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Broneerimissüsteem</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            text-align: center;
+        }
+        input, button {
+            margin: 10px;
+            padding: 10px;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Broneeri aeg</h1>
+    <input type="text" id="nimi" placeholder="Sisesta nimi">
+    <input type="datetime-local" id="aeg">
+    <button onclick="broneeri()">Broneeri</button>
+    
+    <h2>Broneeringud</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Nimi</th>
+                <th>Aeg</th>
+            </tr>
+        </thead>
+        <tbody id="broneeringud"></tbody>
+    </table>
+    
+    <script>
+        function broneeri() {
+            const nimi = document.getElementById('nimi').value;
+            const aeg = document.getElementById('aeg').value;
+            
+            fetch('http://localhost:5000/broneeri', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nimi, aeg })
+            }).then(() => laeBroneeringud());
+        }
+        
+        function laeBroneeringud() {
+            fetch('http://localhost:5000/broneeringud')
+                .then(res => res.json())
+                .then(data => {
+                    const tbody = document.getElementById('broneeringud');
+                    tbody.innerHTML = '';
+                    data.forEach(broneering => {
+                        const rida = `<tr><td>${broneering[1]}</td><td>${broneering[2]}</td></tr>`;
+                        tbody.innerHTML += rida;
+                    });
+                });
+        }
+        
+        laeBroneeringud();
+    </script>
+</body>
+</html>
